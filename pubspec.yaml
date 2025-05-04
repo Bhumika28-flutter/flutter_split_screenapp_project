@@ -35,8 +35,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   get: ^4.7.2
-  fluttertoast: ^8.2.12
   device_preview: ^1.2.0
+  shared_preferences: ^2.2.2 # or latest
+  fluttertoast: ^8.2.12 # or check for the latest version
 
 dev_dependencies:
   flutter_test:

@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:device_preview/device_preview.dart';
 
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // 🔥 Required for platform channels
   runApp(
       DevicePreview(
           enabled: true,

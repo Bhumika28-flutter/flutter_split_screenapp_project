@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:compny_project/controller/HomeController.dart';
 import 'package:compny_project/pages/SecondPage.dart';
 import 'package:compny_project/pages/split_page.dart';
@@ -6,8 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-
-
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,7 +15,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final HomeController controller = Get.put(HomeController());
- // Using GetX Controller
+
+  // Native Android platform method call
   Future<void> requestSplitScreen() async {
     const platform = MethodChannel('split_screen_channel');
     try {
@@ -27,14 +28,30 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    final isSplitView = screenWidth < 700; // Adjust this threshold as needed
+
     return Scaffold(
-      appBar: AppBar(title: Text('My Demo App')),
-      body: SingleChildScrollView( // Wrap the Column with SingleChildScrollView
+      appBar: AppBar(
+        title: Text('My Demo App'),
+      ),
+      body: SingleChildScrollView(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // First Button - Show Toast
+              if (Platform.isIOS || Platform.isMacOS)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    isSplitView
+                        ? '📱 Split View Mode Detected on iPad/macOS'
+                        : '🖥 Fullscreen Mode',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+
               ElevatedButton(
                 onPressed: () {
                   Fluttertoast.showToast(
@@ -49,10 +66,8 @@ class _HomePageState extends State<HomePage> {
 
               SizedBox(height: 20),
 
-              // Second Button - Navigate to a new page
               ElevatedButton(
                 onPressed: () {
-                  // Navigate to the new page
                   Get.toNamed('/second');
                 },
                 child: Text('Go to New Page'),
@@ -60,11 +75,14 @@ class _HomePageState extends State<HomePage> {
 
               SizedBox(height: 20),
 
-              // Third Button - Open Half Screen and then navigate to another activity
-              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  SplitScreenService.startSplitScreen();
+                  if (Platform.isAndroid) {
+                    SplitScreenService.startSplitScreen();
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "Split screen not supported on iOS.");
+                  }
                 },
                 child: Text("Start Split Screen"),
               ),
